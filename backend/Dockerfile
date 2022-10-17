@@ -1,16 +1,23 @@
-FROM node:16-alpine
-
+# С помощью директивы AS можно дать образу имя
+FROM node:16-alpine AS builder
 WORKDIR /app
-
-# установка зависимостей
-# астериск ("*") по возможности скопирует оба файла: package.json и package-lock.json
-# тот же символ делает копирование опциональным, т.е. без файла сборка не упадёт
 COPY package*.json ./
-# Флаг --omit=dev означает - "не ставить devDependencies"
-# они не нужны нам в продакшен окружении
-RUN npm i --omit=dev
-# копируем исходный код
+# Устанавливаем зависимости
+RUN npm i
+# Копируем исходный код и собираем приложение
 COPY . .
+RUN npm run build
 
-EXPOSE 3000
-CMD [ "node", "index.js" ] 
+FROM node:16-alpine as production
+WORKDIR /app
+# С помощью параметера --from указываем, что копировать нужно из образа builder
+# Копируем package.json и package-lock.json (потребуются для установки зависимостей)
+COPY --from=builder /var/www/app/package*.json ./
+# Устанавливаем только зависимости, необходимые в продакшене
+# --omit=dev означает пропустить dev-зависимости
+RUN npm i --omit=dev 
+# Копируем директорию со сборкой приложения
+COPY --from=builder /app/dist ./dist/
+
+# Указываем команду для запуска приложения
+CMD ["node", "/dist/main.js"] 
