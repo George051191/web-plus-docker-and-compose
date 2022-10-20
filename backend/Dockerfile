@@ -12,12 +12,14 @@ FROM node:16-alpine as production
 WORKDIR /app
 # С помощью параметера --from указываем, что копировать нужно из образа builder
 # Копируем package.json и package-lock.json (потребуются для установки зависимостей)
-COPY --from=builder /var/www/app/package*.json ./
+COPY --from=builder /app/package*.json ./
 # Устанавливаем только зависимости, необходимые в продакшене
 # --omit=dev означает пропустить dev-зависимости
 RUN npm i --omit=dev 
 # Копируем директорию со сборкой приложения
-COPY --from=builder /app/dist ./dist/
-
+COPY --from=builder /app/dist ./app/dist/
+EXPOSE 4000
 # Указываем команду для запуска приложения
-CMD ["node", "/dist/main.js"] 
+CMD [ "pm2-runtime", "start", "ecosystem.config.js", "--env=production"]
+
+
