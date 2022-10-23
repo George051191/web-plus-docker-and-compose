@@ -21,6 +21,8 @@ const wishlist_entity_1 = require("./wishlists/entities/wishlist.entity");
 const auth_module_1 = require("./auth/auth.module");
 const app_service_1 = require("./app.service");
 const emailsender_module_1 = require("./emailsender/emailsender.module");
+const dotenv = require("dotenv");
+dotenv.config();
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -31,11 +33,11 @@ AppModule = __decorate([
             users_module_1.UsersModule,
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'postgres',
-                host: 'localhost',
+                host: `${process.env.POSTGRES_HOST}`,
                 port: 5432,
-                username: 'student',
-                password: 'student',
-                database: 'kupipodariday',
+                username: `${process.env.POSTGRES_USER}`,
+                password: `${process.env.POSTGRES_PASSWORD}`,
+                database: `${process.env.POSTGRES_DB}`,
                 entities: [user_entity_1.User, wish_entity_1.Wish, offer_entity_1.Offer, wishlist_entity_1.Wishlist],
                 synchronize: true,
             }),

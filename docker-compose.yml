@@ -1,0 +1,41 @@
+---
+networks:
+  internal-network:
+    driver: bridge
+    internal: true
+  internet:
+    driver: bridge
+services:
+  database:
+    env_file:
+        - .env
+    image: postgres
+    ports:
+     - "5432:5432"
+    restart: unless-stopped
+    networks:
+     - internal-network
+  front:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - server
+    ports:
+      - '8081:80'
+    restart: unless-stopped
+  server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - database
+    links:
+      - database
+    networks:
+      - internal-network
+      - internet
+    ports:
+      - '4000:3000'
+    restart: unless-stopped
+version: '3'

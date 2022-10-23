@@ -12,6 +12,8 @@ import { Wishlist } from './wishlists/entities/wishlist.entity';
 import { AuthModule } from './auth/auth.module';
 import { AppService } from './app.service';
 import { EmailModule } from './emailsender/emailsender.module';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { EmailModule } from './emailsender/emailsender.module';
     UsersModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: `${process.env.POSTGRES_HOST}`,
+      host: `database`,
       port: 5432,
       username: `${process.env.POSTGRES_USER}`,
       password: `${process.env.POSTGRES_PASSWORD}`,

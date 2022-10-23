@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'app1',
-      script: './main.js',
+      script: '/app/dist/src/main.js',
       env_production: {
         JWT_SECRET: 'df56e3397961d9f44008e62ae5ef6d84',
         POSTGRES_PASSWORD: 'student',
