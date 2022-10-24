@@ -6,36 +6,36 @@ networks:
   internet:
     driver: bridge
 services:
-  database:
-    env_file:
-        - .env
-    image: postgres
-    ports:
-     - "5432:5432"
-    restart: unless-stopped
-    networks:
-     - internal-network
-  front:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+  backend:
     depends_on:
-      - server
-    ports:
-      - '8081:80'
-    restart: unless-stopped
-  server:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    depends_on:
-      - database
+      - postgres
+    image: george051191/nestjsapp
     links:
-      - database
+      - postgres
     networks:
       - internal-network
       - internet
     ports:
       - '4000:3000'
-    restart: unless-stopped
-version: '3'
+    restart: on-failure
+  front:
+    depends_on:
+      - backend
+    image: george051191/appfront
+    ports:
+      - '8081:80'
+    restart: on-failure
+  postgres:
+    env_file:
+      - .env
+    image: postgres
+    networks:
+      - internal-network
+    ports:
+      - '5432:5432'
+    restart: on-failure
+    volumes:
+      - data:${POSTGRES_PGDATA}
+volumes:
+    data:    
+version: '3.9'
